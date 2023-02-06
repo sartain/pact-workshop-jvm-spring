@@ -1,6 +1,7 @@
 package au.com.dius.pactworkshop.consumer;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,5 +72,19 @@ class ProductServiceTest {
         Product product = productService.getProduct("50");
 
         assertEquals(expected, product);
+    }
+
+    @Test
+    void getNewProductById() {
+        wireMockServer.stubFor(get(urlPathEqualTo("/products/20"))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK_200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"id\":\"20\",\"type\":\"CREDIT_CARD\",\"name\":\"12 Degrees\",\"version\":\"v1\"}")));
+
+        Product expected = new Product("20", "CREDIT_CARD", "12 Degrees", "v1");
+
+        Product actual = productService.getProduct("20");
+        assertEquals(expected, actual);
     }
 }
